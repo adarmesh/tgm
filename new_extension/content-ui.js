@@ -333,11 +333,12 @@ async function downloadAudio(doc) {
     doc.node?.tagName === "AUDIO-ELEMENT"
       ? doc.node
       : doc.node?.closest("audio-element");
-  if (!audioElement) return;
+  if (!audioElement) return console.warn("[TGM] no <audio-element> for", doc);
 
   await waitForAudioPreload().catch(() => { });
   const url = await resolveAudioStreamUrl(audioElement);
-  if (!url) return;
+  if (!url) return console.warn("[TGM] no stream URL found; audio srcs:", [...document.querySelectorAll("audio")].map((a) => a.src));
+  console.log("[TGM] downloading", url);
 
   await downloadMediaFile(url);
 }
@@ -368,7 +369,12 @@ function injectDownloaderScript() {
 function injectPageStyles() {
   const style = document.createElement("style");
   style.textContent = `.${DOWNLOADING_CLASS} .media-viewer-whole,
-.${DOWNLOADING_CLASS} .media-viewer-whole .overlays { visibility: hidden !important; }`;
+.${DOWNLOADING_CLASS} .media-viewer-whole * {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  transition: none !important;
+  animation: none !important;
+}`;
   document.head.appendChild(style);
 }
 
