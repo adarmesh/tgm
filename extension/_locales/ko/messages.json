@@ -1,0 +1,8 @@
+{
+   "description": {
+      "message": "텔레그램에서 제한된 비디오와 이미지를 한 번의 클릭으로 다운로드하세요."
+   },
+   "name": {
+      "message": "텔레그램 비디오 다운로더 - TVDownloader"
+   }
+}

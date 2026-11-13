@@ -1,0 +1,44 @@
+{
+    "manifest_version": 3,
+    "version": "0.0.1",
+    "name": "TGM",
+    "description": "TG media downloader",
+    "permissions": [
+        "storage",
+        "tabs"
+    ],
+    "action": {
+        "default_icon": "icon.webp",
+        "default_popup": "popup/index.html"
+    },
+    // "background": {
+    //     "service_worker": "background.js",
+    //     "type": "module"
+    // },
+    "content_scripts": [
+        {
+            "js": [
+                "content-ui.js"
+            ],
+            "matches": [
+                "https://*.telegram.org/*"
+            ]
+        }
+    ],
+    "icons": {
+        "128": "icon.webp"
+    },
+    "web_accessible_resources": [
+        {
+            "matches": [
+                "*://*/*"
+            ],
+            "resources": [
+                "*.js",
+                "*.css",
+                "*.svg",
+                "icon.webp"
+            ]
+        }
+    ]
+}

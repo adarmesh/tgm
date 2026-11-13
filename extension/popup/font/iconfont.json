@@ -1,0 +1,30 @@
+{
+    "id": "4602167",
+    "name": "Telegram Downloader",
+    "font_family": "iconfont",
+    "css_prefix_text": "icon-",
+    "description": "",
+    "glyphs": [
+        {
+            "icon_id": "384281",
+            "name": "off",
+            "font_class": "off",
+            "unicode": "e692",
+            "unicode_decimal": 59026
+        },
+        {
+            "icon_id": "4326797",
+            "name": "checked",
+            "font_class": "mamaxinzhiicon_baocun",
+            "unicode": "e62e",
+            "unicode_decimal": 58926
+        },
+        {
+            "icon_id": "34233445",
+            "name": "i18n",
+            "font_class": "i18n",
+            "unicode": "e920",
+            "unicode_decimal": 59680
+        }
+    ]
+}

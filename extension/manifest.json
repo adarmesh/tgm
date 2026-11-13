@@ -1,0 +1,32 @@
+{
+   "action": {
+      "default_icon": "icon.png",
+      "default_popup": "popup/index.html"
+   },
+   "background": {
+      "service_worker": "background.iife.js",
+      "type": "module"
+   },
+   "content_scripts": [ {
+      "js": [ "content-ui/index.iife.js" ],
+      "matches": [ "https://*.telegram.org/*" ]
+   }, {
+      "css": [ "content.css" ],
+      "matches": [ "https://*.telegram.org/*" ]
+   } ],
+   "default_locale": "en",
+   "description": "__MSG_description__",
+   "icons": {
+      "128": "icon.png"
+   },
+   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuMbJJq4NiZRgpab5zSJgfQWX9WHXTAdlX5QWLxRNYyxKObBVkAA6677L7lqIaw0USIihH4NIjhCsVFM0vZKyBfgyV4LGKBooSpJkM/dE/7jbbIHXWxTn9f7nzRTMXRp7AeA6aHYdKMNHHTsFHLEs7UbkrGlFq+n4bzIVkzCUkdYmgUIsNY/wl9YXILyLnv02og1B7+3GPVO4wSTmvyr5fQTND+WiTdvyedgfbndA+Uwnub7VCRfqk/Y9R9lklcKYcHeLscojOVt0q25vStmUdXctEyzzZl2N6EbQ8VmjSSkTgSTKmLlFvCT1iRaZtFQAr1922MAziZWVJ/+kjz6NlwIDAQAB",
+   "manifest_version": 3,
+   "name": "__MSG_name__",
+   "permissions": [ "storage", "tabs" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "1.3.2",
+   "web_accessible_resources": [ {
+      "matches": [ "*://*/*" ],
+      "resources": [ "*.js", "*.css", "*.svg", "icon.png" ]
+   } ]
+}
