@@ -99,7 +99,13 @@ function createButton(styles, onClick) {
   img.style.width = `${BUTTON_SIZE}px`;
   img.style.height = `${BUTTON_SIZE}px`;
   img.style.cursor = "pointer";
-  Object.assign(img.style, styles);
+  // Base position copied from the original's .download-btn CSS.
+  Object.assign(img.style, {
+    position: "absolute",
+    right: "8px",
+    bottom: "24px",
+    zIndex: "999",
+  }, styles);
 
   img.addEventListener("click", async (event) => {
     event.stopPropagation();
@@ -158,7 +164,7 @@ function findHighestQualityMenuItem(items) {
   if (!items.length) return null;
   return items.reduce((best, item) =>
     parseQualityScore(item.textContent ?? "") >
-    parseQualityScore(best.textContent ?? "")
+      parseQualityScore(best.textContent ?? "")
       ? item
       : best,
   );
@@ -329,7 +335,7 @@ async function downloadAudio(doc) {
       : doc.node?.closest("audio-element");
   if (!audioElement) return;
 
-  await waitForAudioPreload().catch(() => {});
+  await waitForAudioPreload().catch(() => { });
   const url = await resolveAudioStreamUrl(audioElement);
   if (!url) return;
 

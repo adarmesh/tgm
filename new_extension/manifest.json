@@ -11,10 +11,10 @@
         "default_icon": "icon.webp",
         "default_popup": "popup/index.html"
     },
-    // "background": {
-    //     "service_worker": "background.js",
-    //     "type": "module"
-    // },
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
     "content_scripts": [
         {
             "js": [
