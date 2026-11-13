@@ -212,11 +212,11 @@ async function resolveAudioStreamUrl(audioElement, timeout = 15000) {
   const existing = findAudioStreamUrl(title);
   if (existing) return existing;
 
-  const toggle = audioElement.querySelector(".audio-toggle");
+  const toggle =
+    audioElement.querySelector(".audio-toggle") ??
+    audioElement.querySelector(".audio-play-icon");
   const wasPlaying = toggle?.classList.contains("playing") ?? false;
-  if (!wasPlaying) {
-    (toggle ?? audioElement.querySelector(".audio-play-icon"))?.click();
-  }
+  if (!wasPlaying) toggle?.click();
 
   const url = await new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
@@ -233,7 +233,11 @@ async function resolveAudioStreamUrl(audioElement, timeout = 15000) {
     }, 200);
   }).catch(() => null);
 
-  if (!wasPlaying && toggle?.classList.contains("playing")) toggle.click();
+  // Silence the track and press the same button again to stop playback.
+  document.querySelectorAll("audio").forEach((audio) => {
+    if (audio.src === url) audio.muted = true;
+  });
+  if (!wasPlaying) toggle?.click();
   return url;
 }
 
@@ -332,8 +336,11 @@ async function downloadAudio(doc) {
   const audioElement =
     doc.node?.tagName === "AUDIO-ELEMENT"
       ? doc.node
-      : doc.node?.closest("audio-element");
-  if (!audioElement) return console.warn("[TGM] no <audio-element> for", doc);
+      : doc.node?.closest("audio-element") ??
+      // Fallback: audio without <audio-element> (plain play icon in a bubble).
+      doc.node?.closest(".audio, .document-container, div.bubble");
+  if (!audioElement) return console.warn("[TGM] no audio container for", doc);
+  console.log("[TGM] audio container:", audioElement.tagName, audioElement.className);
 
   await waitForAudioPreload().catch(() => { });
   const url = await resolveAudioStreamUrl(audioElement);
