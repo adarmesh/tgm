@@ -1,1 +1,110 @@
-var downloader=function(m){"use strict";class b{constructor(){this.downloadEventName="tvd_media_download",this.progressEventName="tvd_media_download_progress",document.addEventListener(this.downloadEventName,e=>{e.detail.urls.forEach(n=>{this.downloadTelegramMediaFile(n)})})}getExtensionFromMimeType(e,o){var a;const n={"audio/mpeg":"mp3","audio/mp4":"m4a","audio/ogg":"ogg","audio/webm":"webm","video/mp4":"mp4","video/webm":"webm","image/jpeg":"jpg","image/png":"png","image/webp":"webp"};if(o){const i=(a=o.match(/\.([^.]+)$/))==null?void 0:a[1];if(i)return i}return n[e]??e.split("/")[1]??"bin"}applyExtension(e,o){const n=e.lastIndexOf(".");return n===-1?`${e}.${o}`:`${e.slice(0,n+1)}${o}`}downloadTelegramMediaFile(e){const o=[];let n=0,a=null,i="mp4",r="",d="application/octet-stream",u=!1;if(e.includes("stream/")){const s=this.getMediaInfoFromLink(e);s&&(s.mimeType&&(d=s.mimeType),s.fileName?(r=s.fileName,u=!0,i=this.getExtensionFromMimeType(d,r)):(i=this.getExtensionFromMimeType(d),r=`${s.location.id}.${i}`))}else r=e.startsWith("blob")?`${e.split("/").pop()}.${i}`:`${Math.random().toString(36).substring(2,10)}.${i}`;const v=()=>{const s=new Blob(o,{type:d}),l=window.URL.createObjectURL(s),t=document.createElement("a");document.body.appendChild(t),t.href=l,t.download=r,t.click(),document.body.removeChild(t),window.URL.revokeObjectURL(l)},p=(s=0,l=3)=>{fetch(e,{method:"GET",headers:{Range:`bytes=${n}-`,"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/117.0"}}).then(t=>{var w,f;if(![200,206].includes(t.status))throw new Error(`Non 200/206 response received: ${t.status}`);const h=((w=t.headers.get("Content-Type"))==null?void 0:w.split(";")[0])||"";h&&(d=h,u||(i=this.getExtensionFromMimeType(h,r),r=this.applyExtension(r,i)));const c=(f=t.headers.get("Content-Range"))==null?void 0:f.match(/^bytes (\d+)-(\d+)\/(\d+)$/);if(!c)throw new Error("Invalid Content-Range header");const y=parseInt(c[1]),T=parseInt(c[2]),g=parseInt(c[3]);if(y!==n)throw new Error("Gap detected between responses.");if(a&&g!==a)throw new Error("Total size differs");n=T+1,a=g;const M=Math.round(n/a*100);return this.updateDownloadProgress(e,M),t.blob()}).then(t=>{if(o.push(t),!a)throw new Error("Total size is NULL");n<a?p():(v(),this.updateDownloadProgress(e,100))}).catch(t=>{if(t.message.includes("408")&&s<l){setTimeout(()=>p(s+1,l),2e3);return}this.updateDownloadProgress(e,-1)})};p()}getMediaInfoFromLink(e){const o=e.substring(e.indexOf("stream/")+7).split("?")[0];try{return JSON.parse(decodeURIComponent(o))}catch{return null}}updateDownloadProgress(e,o){document.dispatchEvent(new CustomEvent(this.progressEventName,{detail:{url:e,progress:o}}))}}const E=new b;return m.downloader=E,Object.defineProperty(m,Symbol.toStringTag,{value:"Module"}),m}({});
+var downloader = function (m) {
+    "use strict";
+    class b {
+        constructor() {
+            this.downloadEventName = "tvd_media_download", this.progressEventName = "tvd_media_download_progress", document.addEventListener(this.downloadEventName, e => {
+                e.detail.urls.forEach(n => {
+                    this.downloadTelegramMediaFile(n)
+                })
+            })
+        }
+        getExtensionFromMimeType(e, o) {
+            var a;
+            const n = {
+                "audio/mpeg": "mp3",
+                "audio/mp4": "m4a",
+                "audio/ogg": "ogg",
+                "audio/webm": "webm",
+                "video/mp4": "mp4",
+                "video/webm": "webm",
+                "image/jpeg": "jpg",
+                "image/png": "png",
+                "image/webp": "webp"
+            };
+            if (o) {
+                const i = (a = o.match(/\.([^.]+)$/)) == null ? void 0 : a[1];
+                if (i) return i
+            }
+            return n[e] ?? e.split("/")[1] ?? "bin"
+        }
+        applyExtension(e, o) {
+            const n = e.lastIndexOf(".");
+            return n === -1 ? `${e}.${o}` : `${e.slice(0, n + 1)}${o}`
+        }
+        downloadTelegramMediaFile(e) {
+            const o = [];
+            let n = 0,
+                a = null,
+                i = "mp4",
+                r = "",
+                d = "application/octet-stream",
+                u = !1;
+            if (e.includes("stream/")) {
+                const s = this.getMediaInfoFromLink(e);
+                s && (s.mimeType && (d = s.mimeType), s.fileName ? (r = s.fileName, u = !0, i = this.getExtensionFromMimeType(d, r)) : (i = this.getExtensionFromMimeType(d), r = `${s.location.id}.${i}`))
+            } else r = e.startsWith("blob") ? `${e.split("/").pop()}.${i}` : `${Math.random().toString(36).substring(2, 10)}.${i}`;
+            const v = () => {
+                const s = new Blob(o, {
+                    type: d
+                }),
+                    l = window.URL.createObjectURL(s),
+                    t = document.createElement("a");
+                document.body.appendChild(t), t.href = l, t.download = r, t.click(), document.body.removeChild(t), window.URL.revokeObjectURL(l)
+            },
+                p = (s = 0, l = 3) => {
+                    fetch(e, {
+                        method: "GET",
+                        headers: {
+                            Range: `bytes=${n}-`,
+                            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/117.0"
+                        }
+                    }).then(t => {
+                        var w, f;
+                        if (![200, 206].includes(t.status)) throw new Error(`Non 200/206 response received: ${t.status}`);
+                        const h = ((w = t.headers.get("Content-Type")) == null ? void 0 : w.split(";")[0]) || "";
+                        h && (d = h, u || (i = this.getExtensionFromMimeType(h, r), r = this.applyExtension(r, i)));
+                        const c = (f = t.headers.get("Content-Range")) == null ? void 0 : f.match(/^bytes (\d+)-(\d+)\/(\d+)$/);
+                        if (!c) throw new Error("Invalid Content-Range header");
+                        const y = parseInt(c[1]),
+                            T = parseInt(c[2]),
+                            g = parseInt(c[3]);
+                        if (y !== n) throw new Error("Gap detected between responses.");
+                        if (a && g !== a) throw new Error("Total size differs");
+                        n = T + 1, a = g;
+                        const M = Math.round(n / a * 100);
+                        return this.updateDownloadProgress(e, M), t.blob()
+                    }).then(t => {
+                        if (o.push(t), !a) throw new Error("Total size is NULL");
+                        n < a ? p() : (v(), this.updateDownloadProgress(e, 100))
+                    }).catch(t => {
+                        if (t.message.includes("408") && s < l) {
+                            setTimeout(() => p(s + 1, l), 2e3);
+                            return
+                        }
+                        this.updateDownloadProgress(e, -1)
+                    })
+                };
+            p()
+        }
+        getMediaInfoFromLink(e) {
+            const o = e.substring(e.indexOf("stream/") + 7).split("?")[0];
+            try {
+                return JSON.parse(decodeURIComponent(o))
+            } catch {
+                return null
+            }
+        }
+        updateDownloadProgress(e, o) {
+            document.dispatchEvent(new CustomEvent(this.progressEventName, {
+                detail: {
+                    url: e,
+                    progress: o
+                }
+            }))
+        }
+    }
+    const E = new b;
+    return m.downloader = E, Object.defineProperty(m, Symbol.toStringTag, {
+        value: "Module"
+    }), m
+}({});
