@@ -18,7 +18,7 @@
     "content_scripts": [
         {
             "js": [
-                "content-ui.js"
+                "content-ui-fixed.js"
             ],
             "matches": [
                 "https://*.telegram.org/*"
