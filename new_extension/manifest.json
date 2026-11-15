@@ -8,7 +8,7 @@
         "tabs"
     ],
     "action": {
-        "default_icon": "icon.webp",
+        "default_icon": "icon.png",
         "default_popup": "popup/index.html"
     },
     "background": {
@@ -18,7 +18,7 @@
     "content_scripts": [
         {
             "js": [
-                "content-ui-fixed.js"
+                "content-ui.js"
             ],
             "matches": [
                 "https://*.telegram.org/*"
@@ -26,7 +26,10 @@
         }
     ],
     "icons": {
-        "128": "icon.webp"
+        "16": "icon.png",
+        "32": "icon.png",
+        "64": "icon.png",
+        "128": "icon.png"
     },
     "web_accessible_resources": [
         {
@@ -37,7 +40,7 @@
                 "*.js",
                 "*.css",
                 "*.svg",
-                "icon.webp"
+                "icon.png"
             ]
         }
     ]

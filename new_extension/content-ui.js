@@ -93,7 +93,7 @@ function haveSameDocuments(a, b) {
 
 function createButton(styles, onClick) {
   const img = document.createElement("img");
-  img.src = chrome.runtime.getURL("icon.webp");
+  img.src = chrome.runtime.getURL("icon.png");
   img.width = BUTTON_SIZE;
   img.height = BUTTON_SIZE;
   img.style.width = `${BUTTON_SIZE}px`;
