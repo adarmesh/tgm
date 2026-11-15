@@ -178,39 +178,74 @@ function findAudioStreamUrl(title) {
   return null;
 }
 
-// Makes Telegram create the stream URL by briefly pressing play, then pauses.
 async function resolveAudioStreamUrl(audioElement, timeout = 15000) {
-  const title = getAudioTitle(audioElement);
-  const existing = findAudioStreamUrl(title);
-  if (existing) return existing;
-
-  const toggle =
-    audioElement.querySelector(".audio-toggle") ??
+  // 1. Identify the toggle button
+  const toggle = audioElement.querySelector(".audio-toggle") ??
     audioElement.querySelector(".audio-play-icon");
-  const wasPlaying = toggle?.classList.contains("playing") ?? false;
-  if (!wasPlaying) toggle?.click();
+  if (!toggle) return null;
 
-  const url = await new Promise((resolve, reject) => {
-    const timeoutId = setTimeout(() => {
-      clearInterval(intervalId);
+  const wasPlaying = toggle.classList.contains("playing");
+
+  // 2. Setup MutationObserver to catch the src assignment
+  const urlPromise = new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      observer.disconnect();
       reject(new Error("Timeout waiting for audio stream"));
     }, timeout);
-    const intervalId = setInterval(() => {
-      const found = findAudioStreamUrl(title);
-      if (found) {
-        clearTimeout(timeoutId);
-        clearInterval(intervalId);
-        resolve(found);
-      }
-    }, 200);
-  }).catch(() => null);
 
-  // Silence the track and press the same button again to stop playback.
-  document.querySelectorAll("audio").forEach((audio) => {
-    if (audio.src === url) audio.muted = true;
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        // Check new nodes or attribute changes on existing audio tags
+        const target = mutation.target;
+        if (target.tagName === "AUDIO" && target.src) {
+          cleanup(target.src);
+          return;
+        }
+
+        mutation.addedNodes.forEach(node => {
+          if (node.tagName === "AUDIO" && node.src) {
+            cleanup(node.src);
+          } else if (node.querySelectorAll) {
+            const audio = node.querySelector("audio");
+            if (audio?.src) cleanup(audio.src);
+          }
+        });
+      }
+    });
+
+    const cleanup = (url) => {
+      clearTimeout(timer);
+      observer.disconnect();
+      resolve(url);
+    };
+
+    // Observe the whole document as Telegram may append the audio tag to the body
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["src"]
+    });
   });
-  if (!wasPlaying) toggle?.click();
-  return url;
+
+  try {
+    // 3. Click to trigger stream resolution (briefly turn on)
+    if (!wasPlaying) toggle.click();
+
+    const srcUrl = await urlPromise;
+
+    // 5 & 6. Mute existing audio and revert playback state
+    document.querySelectorAll("audio").forEach(audio => {
+      if (audio.src === srcUrl) audio.muted = true;
+    });
+
+    if (!wasPlaying) toggle.click(); // Unclick to stop
+
+    return srcUrl;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 }
 
 function waitForAudioPreload(timeout = 15000, interval = 500) {
